@@ -1,0 +1,27 @@
+# CI baseline — ready to activate as `.github/workflows/ci.yml`.
+# Writing files under .github/workflows/ requires the GitHub app to hold the
+# "Workflows" permission, so this is versioned here for now. To activate:
+#   mkdir -p .github/workflows && cp docs/ci.yml.example .github/workflows/ci.yml
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    name: Secret scanning (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
